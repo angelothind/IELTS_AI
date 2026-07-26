@@ -1,21 +1,17 @@
 import React from 'react';
 import './button.css';
 import { useState } from 'react';
-import { ArrowBackIcon } from '@mui/icons-material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 const Button = ({onClick}) =>{
     const [submitted, setSubmitted] = useState(false);
     if (!submitted) {
-        return (
-            <div className="button-container">
+        return (    
             <button className="submit-button" onClick={onClick}>Submit</button>
-            </div>
         )
     } else {
-        return (
-            <div className="button-container">
+        return (   
             <button className="submit-button" onClick={onClick}><ArrowBackIcon /></button>
-            </div>
         )
     }
 }

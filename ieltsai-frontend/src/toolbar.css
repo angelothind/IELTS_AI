@@ -1,0 +1,19 @@
+.toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
+    padding: 1rem 10%;
+  }
+  
+  .timer {
+    justify-self: start;
+  }
+  
+  .entry-text {
+    justify-self: center;
+  }
+  
+  .submit-button {
+    justify-self: end;
+  }
