@@ -4,11 +4,18 @@ import { useState, useEffect } from 'react';
 
 const TOTAL_SECONDS = 40 * 60; // 40 minutes
 
-const Timer = () => {
+const Timer = ({isFinished,setIsFinished}) => {
   const [secondsLeft, setSecondsLeft] = useState(TOTAL_SECONDS);
 
   useEffect(() => {
-    if (secondsLeft <= 0) return;
+    if (secondsLeft <= 0) {
+      setIsFinished(true);
+      return;
+    }
+
+    else if (isFinished) {
+      return;
+    }
 
     const intervalId = setInterval(() => {
       setSecondsLeft((prev) => prev - 1);
