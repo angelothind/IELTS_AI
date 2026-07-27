@@ -8,7 +8,7 @@ const Toolbar = () => {
             <nav className="toolbar">
                 <span className="timer">Timer Placeholder</span>
                 <span className="entry-text">Please write your essay below</span>
-                <Button onClick={() => {}}  className="submit-button"/>
+                <Button  onClick={() => {}} className="submit-button"/>
             </nav>
         </div>
     )

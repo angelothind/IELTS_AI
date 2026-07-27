@@ -5,15 +5,23 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 const Button = ({onClick}) =>{
     const [submitted, setSubmitted] = useState(false);
+    const handleSubmit = () => {
+        setSubmitted(true);
+        onClick();
+    }
     if (!submitted) {
         return (    
-            <button className="submit-button" onClick={onClick}>Submit</button>
+            <button className="submit-button" onClick={handleSubmit}>Submit</button>
         )
     } else {
         return (   
-            <button className="submit-button" onClick={onClick}><ArrowBackIcon /></button>
+            <button className="submit-button" onClick={handleSubmit}><ArrowBackIcon /></button>
         )
     }
+
+
 }
+
+
 
 export default Button;
