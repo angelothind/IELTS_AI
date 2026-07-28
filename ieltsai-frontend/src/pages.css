@@ -1,0 +1,12 @@
+.pages {
+  width: 8.5in;
+  min-height: 11in;
+  max-width: calc(100% - 2rem);
+  margin: 0 auto 2rem;
+  padding: 1in;
+
+  background-color: #ffffff;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.18);
+}
