@@ -1,26 +1,8 @@
 .pages {
-  width: 8.5in;
-  min-height: 11in;
-  max-width: calc(100% - 2rem);
-  margin: 0 auto 2rem;
-  padding: 1in;
-
-  background-color: #ffffff;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.2),
-    0 4px 16px rgba(0, 0, 0, 0.18);
-}
-
-
-.page-editor {
   width: 100%;
-  min-height: 9in;
-  padding: 0;
-  border: none;
-  outline: none;
-  resize: none;
-  background: transparent;
-  color: #111;
-  font: 18px/1.6 Arial, sans-serif;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }

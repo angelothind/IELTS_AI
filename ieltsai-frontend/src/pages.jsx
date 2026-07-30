@@ -1,18 +1,15 @@
 import { useState } from 'react';
 import './pages.css';
+import Page from './page';
 
 const Pages = () => {
   const [text, setText] = useState('');
 
   return (
     <div className="pages">
-      <textarea
-        className="page-editor"
+      <Page
         value={text}
-        onChange={(event) => setText(event.target.value)}
-        placeholder="Start writing..."
-        aria-label="Writing editor"
-        spellCheck
+        onChange={setText}
       />
     </div>
   );
