@@ -1,10 +1,11 @@
 import './page.css';
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 
-const Page = ({ value, onChange }) => {
+const Page = ({ id, pageNumber, text, onChange, topPage, createPage }) => {
   // state to monitor is textarea overflowing and text area to reference the textarea element
   const [isOverflowing, setIsOverflowing] = useState(false);
   const textareaRef = useRef(null);
+  const [pageText, setPageText] = useState(text);
 
   // useLayoutEffect to check if the textarea is overflowing
   useLayoutEffect(() => {
@@ -16,15 +17,21 @@ const Page = ({ value, onChange }) => {
     const checkOverflow = () => {
       //use Boolean experssion
       setIsOverflowing(el.scrollHeight > el.clientHeight);
+      console.log(isOverflowing);
     };
     checkOverflow();
-    
     // create a ResizeObserver to watch for changes in the textarea's height
     const observer = new ResizeObserver(checkOverflow);
     observer.observe(el);
     // clean up the observer when the component unmounts
     return () => observer.disconnect();
-  }, [value]);
+  }, [pageText]);
+
+  useLayoutEffect(() => {
+    if (isOverflowing) {
+      createPage();
+    }
+  },[isOverflowing]);
 
   return (
     <div className="page">
@@ -33,9 +40,9 @@ const Page = ({ value, onChange }) => {
         ref={textareaRef}
         className="page-editor"
         // pass the value to the textarea
-        value={value}
+        value={pageText}
         // pass the onChange function to the textarea
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) => {onChange(event.target.value); setPageText(event.target.value);}}
         placeholder="Start writing..."
         aria-label="Writing editor"
         spellCheck
