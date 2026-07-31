@@ -1,7 +1,7 @@
 import './page.css';
 import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 
-const Page = ({ id, pageNumber, text, onChange, topPage, createPage }) => {
+const Page = ({ id, pageNumber, text, onChange, topPage, createPage, setPageToRemove }) => {
   // state to monitor is textarea overflowing and text area to reference the textarea element
   const [isOverflowing, setIsOverflowing] = useState(false);
   const textareaRef = useRef(null);
@@ -17,7 +17,7 @@ const Page = ({ id, pageNumber, text, onChange, topPage, createPage }) => {
     const checkOverflow = () => {
       //use Boolean experssion
       setIsOverflowing(el.scrollHeight > el.clientHeight);
-      console.log(isOverflowing);
+      console.log(pageText);
     };
     checkOverflow();
     // create a ResizeObserver to watch for changes in the textarea's height
@@ -32,6 +32,14 @@ const Page = ({ id, pageNumber, text, onChange, topPage, createPage }) => {
       createPage();
     }
   },[isOverflowing]);
+
+  useEffect(() => {
+    if (topPage) {
+      if (pageText === '' && (event.key === 'Backspace' || event.key === 'Delete')) {
+        setPageToRemove(id);
+    }
+  }
+},[topPage,pageText]);
 
   return (
     <div className="page">
