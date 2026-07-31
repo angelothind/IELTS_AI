@@ -2,9 +2,8 @@ import './page.css';
 import { useState, useRef, useLayoutEffect } from 'react';
 
 const Page = ({ value, onChange }) => {
-  // state to monitor is textarea overflowing
+  // state to monitor is textarea overflowing and text area to reference the textarea element
   const [isOverflowing, setIsOverflowing] = useState(false);
-  // ref to the textarea element
   const textareaRef = useRef(null);
 
   // useLayoutEffect to check if the textarea is overflowing
@@ -18,7 +17,6 @@ const Page = ({ value, onChange }) => {
       //use Boolean experssion
       setIsOverflowing(el.scrollHeight > el.clientHeight);
     };
-    // call the function to check if the textarea is overflowing
     checkOverflow();
     
     // create a ResizeObserver to watch for changes in the textarea's height
@@ -26,7 +24,6 @@ const Page = ({ value, onChange }) => {
     observer.observe(el);
     // clean up the observer when the component unmounts
     return () => observer.disconnect();
-    // dependency array 
   }, [value]);
 
   return (
