@@ -6,6 +6,15 @@ const Pages = () => {
   const [documentText, setDocumentText] = useState('');
   const [pages, setPages] = useState([{id: crypto.randomUUID(), number: 1, text: '', topPage: true}]);
   const [pageToRemove, setPageToRemove] = useState(null);
+  
+  const resetPageOrder = () => {setPages(() => {
+    const order = 0;
+    pages.forEach((page) => {
+        page.number = order++;
+    })
+    return pages;
+  })}
+
   const createPage = () => {
     setPages((currentPages) => [
       ...currentPages.map((page) => ({ ...page, topPage: false })),
@@ -14,10 +23,14 @@ const Pages = () => {
   };
   const removePage = (id) =>{
     setPages((currentPages) => {
-      const nonEmptyPages = currentPages.filter((page) => page.id !== id); nonEmptyPages.at(-1).topPage}),[pageToRemove]}
+      const nonEmptyPages = currentPages.filter((page) => page.id !== id); 
+      nonEmptyPages.at(-1).topPage;
+      resetPageOrder; 
+      return nonEmptyPages;}),
+      [pageToRemove]}
         
 
-  useEffect( () => {removePage(pageToRemove),[pageToRemove]; setPageToRemove(null);}, [pageToRemove]);
+  useEffect( () => {removePage(pageToRemove); setPageToRemove(null);}, [pageToRemove]);
 
   return (
     <div className="pages">
