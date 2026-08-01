@@ -33,13 +33,19 @@ const Page = ({ id, pageNumber, text, onChange, topPage, createPage, setPageToRe
     }
   },[isOverflowing]);
 
-  useEffect(() => {
-    if (topPage) {
-      if (pageText === '' && (event.key === 'Backspace' || event.key === 'Delete')) {
-        setPageToRemove(id);
+  const handleKeyDown = (event) => {
+    if (
+      (event.key === 'Backspace' || event.key === 'Delete') &&
+      topPage &&
+      pageNumber !== 1 &&
+      pageText === ''
+    ) {
+      event.preventDefault();
+      setPageToRemove(id);
     }
-  }
-},[topPage,pageText]);
+  };
+
+
 
   return (
     <div className="page">
@@ -51,6 +57,7 @@ const Page = ({ id, pageNumber, text, onChange, topPage, createPage, setPageToRe
         value={pageText}
         // pass the onChange function to the textarea
         onChange={(event) => {onChange(event.target.value); setPageText(event.target.value);}}
+        onKeydown = {(event) => {handleKeyDown(event)}}
         placeholder="Start writing..."
         aria-label="Writing editor"
         spellCheck
