@@ -7,13 +7,23 @@ const Pages = () => {
   const [pages, setPages] = useState([{id: crypto.randomUUID(), number: 1, text: '', topPage: true}]);
   const [pageToRemove, setPageToRemove] = useState(null);
   
-  const resetPageOrder = () => {setPages(() => {
-    const order = 0;
-    pages.forEach((page) => {
-        page.number = order++;
-    })
-    return pages;
-  })}
+  const resetPageOrder = () => {
+    setPages((pages) => 
+      pages.map( (page, pageIndex) => ({
+        ...page, number:pageIndex,
+      })
+    )
+  );
+};
+
+  const resetPageOrder = () => {
+    setPages((pages) =>
+      pages.map((page, pageIndex) => ({
+        ...page,
+        number: pageIndex,
+      }))
+    );
+  };
 
   const createPage = () => {
     setPages((currentPages) => [
