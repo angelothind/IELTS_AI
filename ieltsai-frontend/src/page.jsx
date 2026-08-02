@@ -1,25 +1,21 @@
 import './page.css';
-import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 
-const Page = ({ id, pageNumber, text, onChange, topPage, createPage, setPageToRemove }) => {
-  // state to monitor is textarea overflowing and text area to reference the textarea element
+const Page = ({ id, pageNumber, pageText, writing, bottomPage, createPage, removePage }) => {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const textareaRef = useRef(null);
-  const [pageText, setPageText] = useState(text);
+  const text = pageText[0];
 
-  // useLayoutEffect to check if the textarea is overflowing
   useLayoutEffect(() => {
     const el = textareaRef.current;
-    // if the textarea is not found, return
     if (!el) return;
     
-    //define function to check if the textarea is overflowing
     const checkOverflow = () => {
-      //use Boolean experssion
       setIsOverflowing(el.scrollHeight > el.clientHeight);
       console.log(pageText);
     };
     checkOverflow();
+    
     // create a ResizeObserver to watch for changes in the textarea's height
     const observer = new ResizeObserver(checkOverflow);
     observer.observe(el);
@@ -28,20 +24,20 @@ const Page = ({ id, pageNumber, text, onChange, topPage, createPage, setPageToRe
   }, [pageText]);
 
   useLayoutEffect(() => {
-    if (isOverflowing) {
+    if (isOverflowing && bottomPage) {
       createPage();
     }
-  },[isOverflowing]);
+  }, [isOverflowing, bottomPage, createPage]);
 
   const handleKeyDown = (event) => {
     if (
       (event.key === 'Backspace' || event.key === 'Delete') &&
-      topPage &&
+      bottomPage &&
       pageNumber !== 1 &&
-      pageText === ''
+      text === ''
     ) {
       event.preventDefault();
-      setPageToRemove(id);
+      removePage(id);
     }
   };
 
@@ -54,10 +50,10 @@ const Page = ({ id, pageNumber, text, onChange, topPage, createPage, setPageToRe
         ref={textareaRef}
         className="page-editor"
         // pass the value to the textarea
-        value={pageText}
+        value={text}
         // pass the onChange function to the textarea
-        onChange={(event) => {onChange(event.target.value); setPageText(event.target.value);}}
-        onKeydown = {(event) => {handleKeyDown(event)}}
+        onChange={(event) => {writing(id, event.target.value);}}
+        onKeyDown={(event) => {handleKeyDown(event)}}
         placeholder="Start writing..."
         aria-label="Writing editor"
         spellCheck
