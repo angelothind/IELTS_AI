@@ -63,7 +63,7 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
       const beforeExcess = alteration.slice(0, -x);
       const excess = alteration.slice(-x);
 
-      writingToExcess(pageNumber, excess);
+      writingToExcess(pageNumber - 1, excess);
       writing(id, beforeExcess);
       setIsOverflowing(true);
       return;
@@ -76,12 +76,8 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
     const previousExcess = previousPageExcess?.[0] ?? '';
 
     if (previousExcess !== '') {
-        const newTotal = previousExcess + text;
-        const x = newTotal.length - text.length;
-        const beforeExcess = newTotal.slice(0,-x);
-        const excess = newTotal.slice(-x);
-        writingToExcess(pageNumber, excess);
-        writing(id,beforeExcess);
+      writing(id, previousExcess + text);
+      writingToExcess(pageNumber - 2, '');
     }
   }, [id, pageNumber, previousPageExcess, text, writing, writingToExcess]);
 
