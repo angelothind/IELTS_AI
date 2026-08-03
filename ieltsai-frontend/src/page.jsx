@@ -56,7 +56,6 @@ const Page = ({ id, pageNumber, pageText, writing, bottomPage, createPage, remov
         onKeyDown={(event) => {handleKeyDown(event)}}
         placeholder="Start writing..."
         aria-label="Writing editor"
-        spellCheck
       />
     </div>
   );

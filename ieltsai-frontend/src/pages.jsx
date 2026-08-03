@@ -10,7 +10,10 @@ const Pages = () => {
 
   const writing = (id, alteration) => {
     const pageIndex = pages.findIndex((page) => page.id === id);
-    if (pageIndex === -1) return;
+    if (pageIndex === -1){
+      console.log('Page with this page ID was not found');
+      return;
+    }
 
     setDocumentText((currentDocument) =>
       currentDocument.map((pageText, index) =>
