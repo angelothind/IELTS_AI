@@ -1,7 +1,7 @@
 import './page.css';
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 
-const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage, createPage, removePage, focusPage }) => {
+const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage, createPage, removePage, focusPage, previousPageExcess, writingToExcess }) => {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const textareaRef = useRef(null);
   const text = pageText[0];
@@ -38,6 +38,7 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
     }
   }, [isOverflowing, bottomPage, createPage, focusPage, text]);
 
+
   const handleKeyDown = (event) => {
     if (
       // if event = delete, this page is bottom page and its not the first page + is empty
@@ -51,7 +52,38 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
     }
   };
 
+  const handleEdit = (event) => {
+    const alteration = event.currentTarget.value;
+    const isAddition = alteration.length > text.length;
+    const isNowOverflowing =
+      event.currentTarget.scrollHeight > event.currentTarget.clientHeight;
 
+    if (isAddition && isNowOverflowing) {
+      const x = alteration.length - text.length;
+      const beforeExcess = alteration.slice(0, -x);
+      const excess = alteration.slice(-x);
+
+      writingToExcess(pageNumber, excess);
+      writing(id, beforeExcess);
+      setIsOverflowing(true);
+      return;
+    }
+
+    writing(id, alteration);
+  };
+
+  useEffect(() => {
+    const previousExcess = previousPageExcess?.[0] ?? '';
+
+    if (previousExcess !== '') {
+        const newTotal = previousExcess + text;
+        const x = newTotal.length - text.length;
+        const beforeExcess = newTotal.slice(0,-x);
+        const excess = newTotal.slice(-x);
+        writingToExcess(pageNumber, excess);
+        writing(id,beforeExcess);
+    }
+  }, [id, pageNumber, previousPageExcess, text, writing, writingToExcess]);
 
   return (
     <div className="page">
@@ -65,7 +97,7 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
         // pass the value to the textarea
         value={text}
         // pass the onChange function to the textarea
-        onChange={(event) => {writing(id, event.target.value);}}
+        onChange={handleEdit}
         onKeyDown={(event) => {handleKeyDown(event)}}
         placeholder="Start writing..."
         aria-label="Writing editor"

@@ -4,6 +4,7 @@ import Page from './page';
 
 const Pages = () => {
   const [documentText, setDocumentText] = useState([['']]);
+  const [pageExcess, setPageExcess] = useState([['']]);
   const [pages, setPages] = useState([
     { id: crypto.randomUUID(), number: 1, bottomPage: true },
   ]);
@@ -47,9 +48,19 @@ const Pages = () => {
     );
   };
 
+  const writingToExcess = (pageNumber, excess) => {
+
+    setPageExcess((currentBuffer) =>
+      currentBuffer.map((excessBuffer, index) =>
+        index === pageNumber ? [excess] : excessBuffer
+      )
+    );
+  };
+
   const createPage = useCallback(() => {
     const nextPageID = crypto.randomUUID();
     setDocumentText((previousDocumentText) => [...previousDocumentText, ['']]);
+    setPageExcess((previousExcess) => [...previousExcess, ['']])
     setPages((currentPages) => [
       ...currentPages.map((page) => ({ ...page, bottomPage: false })),
       {
@@ -88,6 +99,8 @@ const Pages = () => {
           removePage={removePage}
           pageText={documentText[pageIndex]}
           bottomPage={page.bottomPage}
+          previousPageExcess = {pageExcess[pageIndex -1 ]}
+          writingToExcess={writingToExcess}
           writing={writing}
           focusPage={focusPage}
           createPage={createPage}
