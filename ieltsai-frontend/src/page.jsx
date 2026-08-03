@@ -24,11 +24,19 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
   }, [pageText]);
 
   useLayoutEffect(() => {
-    if (isOverflowing && bottomPage) {
+    if (isOverflowing && bottomPage ) {
       const nextPageId = createPage();
-      focusPage(nextPageId);
+      const textarea = textareaRef.current;
+      const cursorIsAtEnd =
+        document.activeElement === textarea &&
+        textarea.selectionStart === text.length &&
+        textarea.selectionEnd === text.length;
+
+      if (cursorIsAtEnd) {
+        focusPage(nextPageId);
+      }
     }
-  }, [isOverflowing, bottomPage, createPage, focusPage]);
+  }, [isOverflowing, bottomPage, createPage, focusPage, text]);
 
   const handleKeyDown = (event) => {
     if (
