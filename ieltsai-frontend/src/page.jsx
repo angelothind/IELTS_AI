@@ -1,7 +1,7 @@
 import './page.css';
 import { useState, useRef, useLayoutEffect } from 'react';
 
-const Page = ({ id, pageNumber, pageText, writing, bottomPage, createPage, removePage }) => {
+const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage, createPage, removePage, focusPage }) => {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const textareaRef = useRef(null);
   const text = pageText[0];
@@ -25,12 +25,14 @@ const Page = ({ id, pageNumber, pageText, writing, bottomPage, createPage, remov
 
   useLayoutEffect(() => {
     if (isOverflowing && bottomPage) {
-      createPage();
+      const nextPageId = createPage();
+      focusPage(nextPageId);
     }
-  }, [isOverflowing, bottomPage, createPage]);
+  }, [isOverflowing, bottomPage, createPage, focusPage]);
 
   const handleKeyDown = (event) => {
     if (
+      // if event = delete, this page is bottom page and its not the first page + is empty
       (event.key === 'Backspace' || event.key === 'Delete') &&
       bottomPage &&
       pageNumber !== 1 &&
@@ -46,8 +48,11 @@ const Page = ({ id, pageNumber, pageText, writing, bottomPage, createPage, remov
   return (
     <div className="page">
       <textarea
+        ref={(element) => {
+          textareaRef.current = element;
+          registerTextarea(id, element);
+        }}
         // pass the ref to the textarea
-        ref={textareaRef}
         className="page-editor"
         // pass the value to the textarea
         value={text}
