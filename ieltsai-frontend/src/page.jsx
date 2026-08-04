@@ -3,12 +3,19 @@ import { useCallback, useRef, useLayoutEffect } from 'react';
 
 const WHITESPACE = /\s/;
 
+// wordSafeSplit checks whether and where a string should be split
+// this avoids strings/words being split across pages
+// takes value: the string being split
+// takes index: the proposed position of the split
 // pull a break back to the start of the word it lands in, unless that word is
 // itself longer than a page and has to be broken somewhere
 const wordSafeSplit = (value, index) => {
+  //if index is at begining or end of string
   if (index <= 0 || index >= value.length) return index;
+  //if the index is at a whitespace or ahead of a white space
   if (WHITESPACE.test(value[index]) || WHITESPACE.test(value[index - 1])) return index;
 
+  // otherwise go backwards from the given index position until a whitespace is found 
   for (let position = index - 1; position > 0; position -= 1) {
     if (WHITESPACE.test(value[position])) return position + 1;
   }
@@ -38,6 +45,8 @@ const splitAtOverflow = (textarea, value) => {
 
   let low = 0;
   let high = value.length;
+
+  //binary search to find the lenght of values that that fits on the page (0 ->low)
   while (low < high) {
     const middle = Math.ceil((low + high) / 2);
     if (fits(value.slice(0, middle))) {
