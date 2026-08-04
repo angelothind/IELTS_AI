@@ -17,6 +17,4 @@ const Button = ({onClick, isFinished}) =>{
 
 }
 
-
-
 export default Button;

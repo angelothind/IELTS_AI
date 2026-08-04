@@ -1,3 +1,11 @@
 .app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-height: 100svh;
+  background-color: #272525;
+}
+
+.app > .toolbar-container {
+  align-self: stretch;
 }

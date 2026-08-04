@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
+.toolbar-container {
+  width: 100%;
+  padding-bottom: 1.5rem;
+}
+
 .toolbar {
   --toolbar-bg: rgba(24, 26, 29, 0.92);
   --toolbar-border: rgba(255, 255, 255, 0.06);
