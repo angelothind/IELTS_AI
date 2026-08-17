@@ -139,6 +139,8 @@ const Pages = () => {
           pageText={page.text}
           bottomPage={pageIndex === pages.length - 1}
           previousPageExcess={pages[pageIndex - 1]?.excess}
+          nextPageText = {pages[pageIndex + 1]?.text}
+          nextPageID = {pages[pageIndex + 1]?.id}
           writingToExcess={writingToExcess}
           writing={writing}
           createPage={createPage}

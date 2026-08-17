@@ -62,7 +62,7 @@ const splitAtOverflow = (textarea, value) => {
   return { kept: value.slice(0, breakAt), excess: value.slice(breakAt) };
 };
 
-const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage, createPage, removePage, previousPageExcess, writingToExcess }) => {
+const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage, createPage, removePage, previousPageExcess, nextPageText, nextPageID, writingToExcess }) => {
   const textareaRef = useRef(null);
   // Rewriting the value drops the browser caret at the end of the text, so the
   // caret has to be captured up front and put back once the value has settled.
@@ -75,31 +75,54 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
     (value, caret, takeFocus = false) => {
       const textarea = textareaRef.current;
       if (!textarea) return;
+      const isShrinking = value.length < pageText.length;
+      const canPull = isShrinking && nextPageID && nextPageText;
 
-      const split = splitAtOverflow(textarea, value);
-      const kept = split ? split.kept : value;
-      const caretMovesOn = caret !== null && caret > kept.length;
+      if (canPull){
+        const combined = value + nextPageText;
+        const split = splitAtOverflow(textarea, combined);
+        
+        if (!split) {
+          writing(id, combined);
+          writing(nextPageID, '');
+        } else {
+          writing(id, split.kept);
+          writing(nextPageID, split.excess);
+        }
 
-      if (caret !== null) {
-        caretRef.current = caretMovesOn ? null : caret;
+        if (caret !== null) {
+          caretRef.current = Math.min(caret, (split?.kept ?? combined).length);
+
       }
+      return;
+    }
 
-      writing(id, kept);
+      else{
+        const split = splitAtOverflow(textarea, value);
+        const kept = split ? split.kept : value;
+        const caretMovesOn = caret !== null && caret > kept.length;
 
-      if (split) {
-        writingToExcess(
-          pageNumber - 1,
-          split.excess,
-          caretMovesOn ? caret - kept.length : null
-        );
-        if (bottomPage) createPage();
-      }
+        if (caret !== null) {
+          caretRef.current = caretMovesOn ? null : caret;
+        }
 
-      if (takeFocus && !caretMovesOn) {
-        textarea.focus();
-      }
+        writing(id, kept);
+
+        if (split) {
+          writingToExcess(
+            pageNumber - 1,
+            split.excess,
+            caretMovesOn ? caret - kept.length : null
+          );
+          if (bottomPage) createPage();
+        }
+
+        if (takeFocus && !caretMovesOn) {
+          textarea.focus();
+        }
+        }
     },
-    [bottomPage, createPage, id, pageNumber, writing, writingToExcess]
+    [bottomPage, createPage, id, pageNumber, writing, writingToExcess, pageText, nextPageID, nextPageText]
   );
 
   useLayoutEffect(() => {
