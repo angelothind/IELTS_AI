@@ -3,10 +3,8 @@ import './pages.css';
 import Page from './page';
 
 const Pages = () => {
-  const [documentText, setDocumentText] = useState([['']]);
-  const [pageExcess, setPageExcess] = useState([['']]);
   const [pages, setPages] = useState([
-    { id: crypto.randomUUID(), number: 1, bottomPage: true },
+    { id: crypto.randomUUID(), text: '', excess: [''] },
   ]);
   const textareaRefs = useRef(new Map());
   const pendingFocus = useRef(null);
@@ -58,38 +56,43 @@ const Pages = () => {
   // takes the id of the page
   // takes the alteration (new text string in the text area)
   const writing = useCallback((id, alteration) => {
-    const pageIndex = pages.findIndex((page) => page.id === id);
-    if (pageIndex === -1){
-      console.log('Page with this page ID was not found');
-      return;
-    }
+    setPages((currentPages) => {
+      const pageIndex = currentPages.findIndex((page) => page.id === id);
+      if (pageIndex === -1){
+        console.log('Page with this page ID was not found');
+        return currentPages;
+      }
 
-    setDocumentText((currentDocument) =>
       // a reflow that moves nothing must not schedule another render, or
       // measuring and writing would feed each other forever
-      currentDocument[pageIndex]?.[0] === alteration
-        ? currentDocument
-        : currentDocument.map((pageText, index) =>
-            index === pageIndex ? [alteration] : pageText
-          )
-    );
-  }, [pages]);
+      if (currentPages[pageIndex].text === alteration) {
+        return currentPages;
+      }
 
-  // Writing to excess writes to the excess array 
-  // in the index of the page that is creating the excess
-  // it taes the page index, the excess text and the caret()
+      return currentPages.map((page, index) =>
+        index === pageIndex ? { ...page, text: alteration } : page
+      );
+    });
+  }, []);
+
+  // Writing to excess writes to the producing page's excess slot
+  // it takes the page index, the excess text and the caret()
   // The caret rides along with the excess because only the receiving page
   // knows when the text has landed and where the offset ends up.
-  // returns the currentBuffer with the new excess text and the associated caret
   const writingToExcess = useCallback((pageIndex, excess, caret = null) => {
-    setPageExcess((currentBuffer) => {
-      const current = currentBuffer[pageIndex];
-      if (current && current[0] === excess && (current[1] ?? null) === caret) {
-        return currentBuffer;
+    if (pageIndex < 0) return;
+
+    setPages((currentPages) => {
+      if (pageIndex >= currentPages.length) return currentPages;
+
+      const current = currentPages[pageIndex].excess;
+      const nextExcess = excess === '' ? [''] : [excess, caret];
+      if (current[0] === nextExcess[0] && (current[1] ?? null) === (nextExcess[1] ?? null)) {
+        return currentPages;
       }
-      
-      return currentBuffer.map((excessBuffer, index) =>
-        index === pageIndex ? [excess, caret] : excessBuffer
+
+      return currentPages.map((page, index) =>
+        index === pageIndex ? { ...page, excess: nextExcess } : page
       );
     });
   }, []);
@@ -99,46 +102,28 @@ const Pages = () => {
   //returns the id of the newly created page
   const createPage = useCallback(() => {
     const nextPageID = crypto.randomUUID();
-    setDocumentText((previousDocumentText) => [...previousDocumentText, ['']]);
-    setPageExcess((previousExcess) => [...previousExcess, ['']])
     setPages((currentPages) => [
-      ...currentPages.map((page) => ({ ...page, bottomPage: false })),
-      {
-        id: nextPageID,
-        number: currentPages.length + 1,
-        bottomPage: true,
-      },
-    ]); return nextPageID;
+      ...currentPages,
+      { id: nextPageID, text: '', excess: [''] },
+    ]);
+    return nextPageID;
   }, []);
   // remove page function
   // takes in the id of the page to be removed
 
   const removePage = (id) => {
-    const pageIndex = pages.findIndex((page) => page.id === id);
-    if (pageIndex === -1) return;
-
-    //keep the document text that does not have page index related to the provided id parameter
-    setDocumentText((previousDocumentText) =>
-      previousDocumentText.filter((_, index) => index !== pageIndex)
-    );
-    //keep the buffers that do not have page index related to the provided id parameter
-    setPageExcess((previousExcess) =>
-      previousExcess.filter((_, index) => index !== pageIndex)
-    );
-    //keep the page objects that are not the ones with the given parameter id
+    let previousPage = null;
     setPages((currentPages) => {
-      const remainingPages = currentPages.filter((page) => page.id !== id);
-      return remainingPages.map((page, index) => ({
-        ...page,
-        number: index + 1,
-        bottomPage: index === remainingPages.length - 1,
-      }));
+      const pageIndex = currentPages.findIndex((page) => page.id === id);
+      if (pageIndex === -1) return currentPages;
+
+      previousPage = currentPages[pageIndex - 1] ?? null;
+      return currentPages.filter((page) => page.id !== id);
     });
 
     //move the focus back to the previous page
-    const previousPage = pages[pageIndex - 1];
     if (previousPage) {
-      focusPage(previousPage.id, (documentText[pageIndex - 1]?.[0] ?? '').length);
+      focusPage(previousPage.id, previousPage.text.length);
     }
   };
 
@@ -149,11 +134,11 @@ const Pages = () => {
           key={page.id}
           id={page.id}
           registerTextarea={registerTextarea}
-          pageNumber={page.number}
+          pageNumber={pageIndex + 1}
           removePage={removePage}
-          pageText={documentText[pageIndex]}
-          bottomPage={page.bottomPage}
-          previousPageExcess = {pageExcess[pageIndex -1 ]}
+          pageText={page.text}
+          bottomPage={pageIndex === pages.length - 1}
+          previousPageExcess={pages[pageIndex - 1]?.excess}
           writingToExcess={writingToExcess}
           writing={writing}
           createPage={createPage}

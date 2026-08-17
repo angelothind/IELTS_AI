@@ -67,7 +67,7 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
   // Rewriting the value drops the browser caret at the end of the text, so the
   // caret has to be captured up front and put back once the value has settled.
   const caretRef = useRef(null);
-  const text = pageText[0];
+  const text = pageText;
 
   // The single way this page's text changes: anything that no longer fits is
   // handed down, and the caret travels with the text it happens to sit in.
@@ -137,7 +137,9 @@ const Page = ({ id, pageNumber, pageText, registerTextarea, writing, bottomPage,
         ? textarea.selectionStart + incoming.length
         : null);
 
-    writingToExcess(pageNumber - 2, '');
+    if (pageNumber > 1) {
+      writingToExcess(pageNumber - 2, '');
+    }
     reflow(incoming + text, caret, incomingCaret !== null);
   }, [pageNumber, previousPageExcess, reflow, text, writingToExcess]);
 
