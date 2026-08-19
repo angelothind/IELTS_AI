@@ -129,6 +129,7 @@ const Pages = () => {
 
   return (
     <div className="pages">
+      <h2 className='task2'>Have the question here</h2>
       {pages.map((page, pageIndex) => {
         return <Page
           key={page.id}
